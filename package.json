@@ -1,0 +1,16 @@
+{
+  "name": "fullstack-rest-api-demo",
+  "version": "1.0.0",
+  "description": "A full-stack REST API demo with validation, standardized responses, logging, and CORS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.0",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1"
+  }
+}

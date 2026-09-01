@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REST API Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Full-Stack REST API Demo</h1>
+        <p>Create posts and schedules with validation, consistent responses, and CORS support.</p>
+      </header>
+
+      <section class="card">
+        <h2>Create Post</h2>
+        <form id="post-form">
+          <input id="post-title" placeholder="Title" required />
+          <textarea id="post-content" placeholder="Content" required></textarea>
+          <input id="post-category" placeholder="Category" />
+          <button type="submit">Create Post</button>
+        </form>
+        <pre id="post-result">Waiting for request...</pre>
+      </section>
+
+      <section class="card">
+        <h2>Recent Posts</h2>
+        <button id="load-posts">Load Posts</button>
+        <ul id="post-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Create Schedule</h2>
+        <form id="schedule-form">
+          <input id="schedule-title" placeholder="Title" required />
+          <input id="schedule-date" type="date" required />
+          <textarea id="schedule-notes" placeholder="Notes"></textarea>
+          <button type="submit">Create Schedule</button>
+        </form>
+        <pre id="schedule-result">Waiting for request...</pre>
+      </section>
+
+      <section class="card">
+        <h2>Upcoming Schedules</h2>
+        <button id="load-schedules">Load Schedules</button>
+        <ul id="schedule-list"></ul>
+      </section>
+    </main>
+
+    <script>
+      const baseUrl = 'http://localhost:3000';
+
+      document.getElementById('post-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          title: document.getElementById('post-title').value,
+          content: document.getElementById('post-content').value,
+          category: document.getElementById('post-category').value
+        };
+
+        const response = await fetch(`${baseUrl}/api/posts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        document.getElementById('post-result').textContent = JSON.stringify(result, null, 2);
+        document.getElementById('post-form').reset();
+        loadPosts();
+      });
+
+      document.getElementById('load-posts').addEventListener('click', loadPosts);
+
+      async function loadPosts() {
+        const response = await fetch(`${baseUrl}/api/posts`);
+        const result = await response.json();
+        const list = document.getElementById('post-list');
+        list.innerHTML = '';
+        result.data.forEach((post) => {
+          const item = document.createElement('li');
+          item.innerHTML = `<strong>${post.title}</strong><br />${post.content}`;
+          list.appendChild(item);
+        });
+      }
+
+      document.getElementById('schedule-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          title: document.getElementById('schedule-title').value,
+          scheduledDate: document.getElementById('schedule-date').value,
+          notes: document.getElementById('schedule-notes').value
+        };
+
+        const response = await fetch(`${baseUrl}/api/schedules`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        document.getElementById('schedule-result').textContent = JSON.stringify(result, null, 2);
+        document.getElementById('schedule-form').reset();
+        loadSchedules();
+      });
+
+      document.getElementById('load-schedules').addEventListener('click', loadSchedules);
+
+      async function loadSchedules() {
+        const response = await fetch(`${baseUrl}/api/schedules`);
+        const result = await response.json();
+        const list = document.getElementById('schedule-list');
+        list.innerHTML = '';
+        result.data.forEach((schedule) => {
+          const item = document.createElement('li');
+          item.innerHTML = `<strong>${schedule.title}</strong><br />${schedule.scheduledDate}<br />${schedule.notes}`;
+          list.appendChild(item);
+        });
+      }
+
+      loadPosts();
+      loadSchedules();
+    </script>
+  </body>
+</html>
